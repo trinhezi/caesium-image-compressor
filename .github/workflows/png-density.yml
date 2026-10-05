@@ -1,0 +1,22 @@
+name: PNG density regression
+on:
+  push:
+    branches: [fix/preserve-png-ppi]
+  pull_request:
+  workflow_dispatch:
+jobs:
+  png-density:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Checkout pinned compression library
+        shell: bash
+        run: |
+          git clone --depth 1 --branch "$(tr -d '\r\n' < libcaesium.conf)" https://github.com/Lymphatus/libcaesium.git library
+      - name: Apply patch twice to check cached builds
+        run: |
+          cmake -DSOURCE_DIR="$PWD/library" -DPATCH_FILE="$PWD/patches/libcaesium-preserve-png-density.patch" -P cmake/ApplyLibcaesiumPatch.cmake
+          cmake -DSOURCE_DIR="$PWD/library" -DPATCH_FILE="$PWD/patches/libcaesium-preserve-png-density.patch" -P cmake/ApplyLibcaesiumPatch.cmake
+      - name: Test original density and unchanged image data
+        working-directory: library
+        run: cargo test --lib ppi_tests

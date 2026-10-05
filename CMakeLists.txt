@@ -219,6 +219,10 @@ ExternalProject_Add(
         libcaesium
         GIT_REPOSITORY https://github.com/Lymphatus/libcaesium
         GIT_TAG ${LIBCAESIUM_VERSION}
+        PATCH_COMMAND ${CMAKE_COMMAND}
+            -DSOURCE_DIR=<SOURCE_DIR>
+            -DPATCH_FILE=${CMAKE_CURRENT_SOURCE_DIR}/patches/libcaesium-preserve-png-density.patch
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ApplyLibcaesiumPatch.cmake
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ${CARGO} build ${CARGO_BUILD_FLAGS} ${CARGO_TARGET}
         INSTALL_COMMAND ""
